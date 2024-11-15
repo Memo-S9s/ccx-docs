@@ -1,6 +1,6 @@
 # Configuration Management
 
-This section describes the configuration management feature in CCX.
+This section describes the configuration management feature in CCX. This feature gives the end-user self-service capabilities to update the datastore configuration. It is the administrator of CCX who decides which database configuration parameters that can be changed by the end-user.
 
 ## Limitations / Important information
 
@@ -9,7 +9,15 @@ This section describes the configuration management feature in CCX.
 - The following list (section below) is not final, but the following parameters and type of parameters must not be changed.
 - We recommend that you contact CCX Support before adding or changing a parameter.
 
-## Non-supported parameters
+:::note
+The parameter settings are applied on scaling and during upgrads (Life-cycle management).
+:::
+
+:::danger
+It is not recommended to update database configuration parameters manually, using S9S CLI or ClusterControl UI. The changes will be overwritten by the the latest saved settings when adding a node (either as part of Scaling, during Lifecycle management, or during automatic repair).
+:::
+ 
+## Non-supported parameters and limitations
 
 ### MySQL/Mariadb
 

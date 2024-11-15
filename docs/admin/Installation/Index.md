@@ -29,7 +29,7 @@ A namespace must be configured for the CCX K8s services to operate.
 example: `production`
 
 ### Helm Charts
-The Helm charts are located in [https://artifacthub.io/packages/helm/clustercontrol/ccx/](https://artifacthub.io/packages/helm/clustercontrol/ccx/). 
+The Helm charts are located in [https://artifacthub.io/packages/helm/severalnines/ccx](https://artifacthub.io/packages/helm/severalnines/ccx).
 The source respository is located in [https://github.com/severalnines/helm-charts](https://github.com/severalnines/helm-charts). The three charts used below are:
 - ccx
 - ccxdeps
@@ -54,7 +54,7 @@ you can enable by setting it to true by using below command.
   helm install ccxdeps s9s/ccxdeps --debug --set ingressController.enabled=true --set external-dns.enabled=true
 ```
 
-## Openstack Requirements
+### Cloud Requirements
 
 #### Flavors/images for datastores
 
@@ -64,13 +64,15 @@ For a test/evaluation the following flavors are recommended:
 - 2vCPU, 4GB RAM, 80GB Disk
 - 4vCPU, 8GB RAM, 100GB Disk
 
-#### Floating IPs
+Also, the easiest if there is a default login account called 'ubuntu' on the image.
 
-Create a pool of floating IPs. Each VM requires a floating IP.
+#### Floating IPs / Public IPs
+
+Create a pool of floating IPs (public IPs). Each VM requires a floating IP/public IP.
 
 #### Disk Space
 
-Disk space can either be ephemeral or block storage.
+Disk space can either be ephemeral or block storage. We recommend block storage as block storage devices can be scaled.
 
 ## Methods to Easy Install/Quickstart CCX Installation
 
@@ -84,7 +86,7 @@ There are two methods to quick start CCX.
   By default CCX will install with the cloud vendor AWS - only thing you need to provide is cloud secrets!
   If you want to customize your installation, please see the `values.yaml` and follow the guide.
 
-  **This is recommendend only for development environment.**
+  **This is recommendend only for development environment. It is a great way to make sure you have working control plane**
 
   ##### Create secrets
 
@@ -110,10 +112,13 @@ There are two methods to quick start CCX.
   helm repo update
   helm install ccxdeps s9s/ccxdeps --wait --debug
   ```
+:::note
+  When using NFS as volume provisioner, NFS servers map requests from unprivileged users to the 'nobody' user on the server, which may result in specific directories being owned by 'nobody'. So Container cannot modify these permissions, therefore it's necessary to enable root_squash on the NFS server to allow proper access.
+:::
 
-> **Note**
-> Make sure to install the prerequisites in `Prerequisite tool sets for CCX Installation` for ccxdeps.
-
+:::note
+ Make sure to install the prerequisites in `Prerequisite tool sets for CCX Installation` for ccxdeps.
+:::
 ##### Customize your CCX values
 
 Have a look at `values.yaml` and create your own values file to customize your CCX instance.
@@ -134,10 +139,11 @@ ccx:
 
 For testing, you can also add entry in your `/etc/hosts` file for local resolution of `ccx.local` on your machine instead of public FQDN.
 
-> **Note**
-> Get in touch with our s9s representative in case of issues or clarifications.
+:::note
+ Get in touch with our s9s representative in case of issues or clarifications.
+:::
 
-#### Method 2:
+### Method 2:
 
 - ##### Run the Installation bash script
   Clone the repo [`helm-ccx`](https://github.com/severalnines/helm-charts.git) and run the script
@@ -157,8 +163,16 @@ helm repo add s9s https://severalnines.github.io/helm-charts/
 helm repo update
 helm install ccx s9s/ccx --wait --debug --values values.yaml
 ```
+:::note
+Ensure to check all pods, jobs are running without any errors.
+:::
 
-Note: Ensure to check all pods, jobs are running without any errors
+:::danger
+Downgrades are not supported.
+::::
+
+### Cloud Provider Configuration
+To know more about the CCX Cloud Provider Configuration setup, please read [CCX Cloud Provider Configuration](Cloud-Providers.md).
 
 ### Production Environment Configs
 
@@ -167,10 +181,11 @@ Backups needs to be configured for:
 - CMON database (See [mysql](Mysql-Operator-Installation.md))
 - CCX database (See [postgres](Postgres-Operator-Installation.md))
   
-  > **Note**
-  > Severalnines is not responsible for backups that is lost or incorrect configuration
->#### Important Notice: Taking Persistent Volume Snapshots in Production Environment
-> To ensure data integrity and availability in your production environment, it is crucial to take regular snapshots of Persistent Volume Claims (PVCs) for CMON, DB's. Configure snapshot schedule at regular intervals, based on the criticality and update frequency of your data in your cloud environment
+:::note
+   Severalnines is not responsible for backups that is lost or incorrect configuration
+   #### Important Notice: Taking Persistent Volume Snapshots in Production Environment
+   To ensure data integrity and availability in your production environment, it is crucial to take regular snapshots of Persistent Volume Claims (PVCs) for CMON, DB's. Configure snapshot schedule at regular intervals, based on the criticality and update frequency of your data in your cloud environment
+:::
 
 ### Observability
 

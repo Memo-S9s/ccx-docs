@@ -12,10 +12,14 @@ For the CMON managing the CMONDB and CCXDB, see below.
 
 Use kubectl and open a bash terminal on the cmon-master container.
 
-### S9S CLI commands
+### S9S CLI commands 
 
-*WARNING!* Do not add or remove database nodes using the S9s CLI. 
-
+:::danger
+Never use the S9S CLI nor the CCUIv2 to add or remove resources (nodes or datastores). This may lead to stray data.
+Do not use the following commands:
+- s9s cluster --[drop|remove-node|add-node|upgrade-cluster|reinstall-node|demote-node|reconfigure-node]
+- s9s node --[stop|unregister]
+::::
 The 's9s job' commands can be used to debug why a datastore failed to create. Example:
 
 ```bash
@@ -106,6 +110,12 @@ s9s account --cluster-id=NNN --create --account='ccxadmin:PASSWORD@%' --privileg
 
 ```bash
 s9s account --cluster-id=NNN --create --account='ccxadmin:PASSWORD@%' --privileges='NOSUPERUSER, CREATEROLE, LOGIN, CREATEDB'
+```
+
+### Rebuildint a failed replica
+In some cases it is wanted to rebuild a replica.
+```bash
+s9s replication --cluster-id=NNN --stage --master="PUBLIC_ADDRESSS_OF_MASTER" --slave="PUBLIC_ADDRESSS_OF_REPLICA_TO_BE_REBUILT
 ```
 
 ## Certificates
